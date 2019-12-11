@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>航班查询</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim 和 Respond.js 是为了让 IE8 支持 HTML5 元素和媒体查询（media queries）功能 -->
+    <!-- 警告：通过 file:// 协议（就是直接将 html 页面拖拽到浏览器中）访问页面时 Respond.js 不起作用 -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">航班查询</a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+      </div><!-- /.container-fluid -->
+    </nav>
+    <div class="container">
+      <form action="/list">
+        <div class="row">
+          <div class="form-group col-lg-2 col-lg-2 col-md-2 col-sm-2">
+            <label for="dCity">出发城市</label>
+            <input type="text" class="form-control col-lg-2" value="{{ data.dCity }}" required name="dCity" id="dCity" placeholder="出发城市名称">
+          </div>
+          <div class="form-group col-lg-2 col-lg-2 col-md-2 col-sm-2">
+            <label for="aCity">到达城市</label>
+            <input type="text" class="form-control col-lg-2" value="{{ data.aCity }}" required name="aCity" id="aCity" placeholder="到达城市名称">
+          </div>
+          <div class="form-group col-lg-2 col-lg-2 col-md-2 col-sm-2">
+            <label for="dayTime">出发时间</label>
+            <input type="date" class="form-control col-lg-2" value="{{ data.dayTime }}" required name="dayTime" id="dayTime" placeholder="日期">
+          </div>
+          <div class="form-group col-lg-2 col-md-2 col-sm-2">
+            <label for="queryButton"><i class="glyphicon glyphicon-search"></i></label>
+            <button type="submit" id="queryButton" class="form-control col-lg-2 btn btn-primary">查询</button>
+          </div>
+        </div>
+        <div class="row" >
+
+        </div>
+      </form>
+        <hr>
+      {% if not flights %}
+      <h2>{{ msg }}</h2>
+      {% else %}
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr class="headings">
+              <th class="column-title">航空公司 </th>
+              <th class="column-title">航班号 </th>
+              <th class="column-title">最低价格 </th>
+              <th class="column-title">起飞时间 </th>
+              <th class="column-title">起飞机场 </th>
+              <th class="column-title">降落时间 </th>
+              <th class="column-title">降落机场 </th>
+              <th class="column-title">舱位及其票价 </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for flight in flights %}
+            <tr class="even pointer">
+              <td class=" ">{{ flight.airlineName }}</td>
+              <td class=" ">{{ flight.fightNumber }}</td>
+              <td class=" ">{{ flight.lowestPrice }}</td>
+              <td class=" ">{{ flight.departureDate }}</td>
+              <td class=" ">{{ flight.departureAirport }}{{ flight.departureTerminal }}</td>
+              <td class=" ">{{ flight.arrivalDate }}</td>
+              <td class=" ">{{ flight.arrivalAirport }}{{ flight.arrivalTerminal }}</td>
+              <td class=" ">
+                  <ul>
+                      {% for cabin in flight.cabins %}
+                      <li>{{ cabin.cabinClass }}{% if cabin.rate < 10 and cabin.rate > 0 %}{{ cabin.rate }}折{% else %}全价{% endif %}: {{ cabin.price }}</li>
+                      {% endfor %}
+                  </ul>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+    <script>
+        $(function(){
+            var date_now = new Date();
+            var year = date_now.getFullYear();
+            var month = date_now.getMonth()+1 < 10 ? "0"+(date_now.getMonth()+1) : (date_now.getMonth()+1);
+            var date = date_now.getDate() < 10 ? "0"+date_now.getDate() : date_now.getDate();
+            $("#dayTime").attr("min",year+"-"+month+"-"+date);
+        })
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+  </body>
+</html>
